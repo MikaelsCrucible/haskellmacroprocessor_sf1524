@@ -1,4 +1,7 @@
-module MP (separators, lookUp, splitText, combine, getKeywordDefs, expand) where
+module MP (separators, lookUp, splitText, combine, getKeywordDefs, expand, expandonce, replaceWord) where
+
+import Data.Maybe
+import Data.List
 
 type FileContents = String
 
@@ -18,7 +21,7 @@ returning all the values that match with that key.
 > lookUp "A" [("A", 8), ("B", 9), ("C", 5), ("A", 7)] == [8, 7]
 -}
 lookUp :: String -> [(String, a)] -> [a]
-lookUp = undefined
+lookUp key pairs = [snd x | x<-pairs, fst x == key]
 
 {-|
 This function will break up a string with some given separator
@@ -28,7 +31,12 @@ each "word" and the words themselves.
 splitText :: [Char] -- ^ the separators to split on
           -> String -- ^ the string to split
           -> ([Char], [String])
-splitText = undefined
+splitText _ "" = ([], [""])
+splitText sep (c : str)
+  | c `elem` sep = let (sepc, sepwords) = splitText sep str
+                   in (c : sepc, "" : sepwords)
+  | otherwise = let (spec, sepwords) = splitText sep str
+                in (spec, (c : head sepwords) : tail sepwords)
 
 {-|
 This function interleaves the characters from the first argument
@@ -36,7 +44,10 @@ list with the strings in the second argument. The second list must
 be non-empty.
 -}
 combine :: [Char] -> [String] -> [String]
-combine = undefined
+combine _ [] = [""]
+combine _ [s] = [s]
+combine [] x = x
+combine (c : sep) (s1 : strs) = s1 : [c] : combine sep strs
 
 {-|
 This function takes a list of lines and splits each line to
@@ -45,7 +56,11 @@ extract a list of keyword-definition pairs.
 > getKeywordDefs ["$x Define x", "$y 55"] == [("$x", "Define x"), ("$y", "55")]
 -}
 getKeywordDefs :: [String] -> KeywordDefs
-getKeywordDefs = undefined
+getKeywordDefs [] = []
+getKeywordDefs (str : strs) = let sptext = splitText [' '] str
+                                  keyword = head (snd sptext)
+                                  value = concat (combine (tail (fst sptext)) (tail (snd sptext)))
+                                  in (keyword, value) : getKeywordDefs strs
 
 {-|
 This function takes the contents of two files, one containing
@@ -56,12 +71,29 @@ of these keywords in the template file, producing new file contents
 as a result.
 
 > expand "The capital $1 is $2" "$1 Peru\n$2 Lima." == "The capital of Peru is Lima"
+                                                                                  /\ no '.' here, guess I'm right about the test data
 -}
 expand :: FileContents -- ^ the template file contents
        -> FileContents -- ^ the info file contents
        -> FileContents
-expand = undefined
+expand template defs
+  |  '#' `notElem` defs = expandonce template defs
+  |  otherwise = let keys = snd (splitText "#" defs)
+                     texts = map (expandonce template) keys
+                     in intercalate "-----" texts
+
+--expandonce was the original expand but had to write a new one for the extension content
+expandonce :: FileContents -- ^ the template file contents
+       -> FileContents -- ^ the info file contents
+       -> FileContents
+expandonce template defs = concat (combine (fst words) (map (`replaceWord` keys) (snd words))) -- replace all words in the text by keys and then combine them all together to get a string
+  where words = splitText separators template
+        keys = getKeywordDefs (snd (splitText (tail separators) defs))
 
 -- You may wish to uncomment and implement this helper function
 -- when implementing expand
--- replaceWord :: String -> KeywordDefs -> String
+replaceWord :: String -> KeywordDefs -> String
+replaceWord "" _ = ""
+replaceWord word keys
+  | head word == '$' = fromMaybe word (listToMaybe (lookUp word keys)) -- not sure this is how it should be done. I found out about the maybe thing on the Internet and it did work here so I wrote something like this 
+  | otherwise = word

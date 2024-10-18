@@ -53,7 +53,7 @@ golden diff = testGroup "macro" [ shakespeareTest diff
                                 , poohTest diff
                                 -- this tests the behaviour of the extension, you can uncomment
                                 -- if you wish!
-                                --, extensionTest diff
+                                , extensionTest diff
                                 ]
 
 shakespeareTest :: Maybe FilePath -> TestTree

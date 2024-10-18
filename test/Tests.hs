@@ -58,7 +58,7 @@ expandTests = [ expand "The capital of $1 is $2" "$1 Peru\n$2 Lima." --> "The ca
                        "$x $a\n$y $b\n$z $c\n$here $this-is-one"
                    --> "Keywords (e.g. $a, $b, $c...) may appear anwhere, e.g. <$this-is-one>."
               , expand "I want to get $points out of $ptstotal." "$points 10\n$ptstotal ten"   --> "I want to get 10 out of ten."
-              , expand "Welcome to $town, where $name was born in $birth-date." "$name William Shakespeare\n$birth-date 1564\n$town Stratford upon Avon#$birth-date 1840\n$town Stinsford\n$name Thomas Hardy#$name Charles Dickens\n$town Landport\n$birth-date 1812"   --> "Welcome to Stratford upon Avon, where William Shakespeare was born in 1564.\n-----\nWelcome to Stinsford, where Thomas Hardy was born in 1840.\n-----\nWelcome to Landport, where Charles Dickens was born in 1812.\n-----\n"              -- extension test
+              , expand "Welcome to $town, where $name was born in $birth-date." "$name William Shakespeare\n$birth-date 1564\n$town Stratford upon Avon#$birth-date 1840\n$town Stinsford\n$name Thomas Hardy#$name Charles Dickens\n$town Landport\n$birth-date 1812"   --> "Welcome to Stratford upon Avon, where William Shakespeare was born in 1564.-----\nWelcome to Stinsford, where Thomas Hardy was born in 1840.-----\nWelcome to Landport, where Charles Dickens was born in 1812.-----\n"              -- extension test
               ]
 
 -------------------------------------------------------------------------------

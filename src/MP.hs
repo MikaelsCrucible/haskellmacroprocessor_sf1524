@@ -83,7 +83,7 @@ expand template defs
   |  '#' `notElem` defs = expandonce template defs
   |  otherwise = let keys = snd (splitText "#" defs)
                      texts = map (expandonce template) keys
-                     in (intercalate "\n-----\n" texts) ++ "\n-----\n"
+                     in intercalate "-----\n" texts ++ "-----\n"
 
 --expandonce was the original expand but had to write a new one for the extension content
 expandonce :: FileContents -- ^ the template file contents

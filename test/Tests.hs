@@ -52,8 +52,8 @@ getKeywordDefsTests = [ getKeywordDefs ["$rule Reproduce this precisely -- or el
                       ]
 
 expandTests :: [Assertion]
-expandTests = [ expand "The capital of $1 is $2" "$1 Peru\n$2 Lima." --> "The capital of Peru is Lima"  -- So far as I'm concerned, there should not be a '.' at the end as it does the same thing as '\' or 'n'
-              , expand "The time is $a"  "$a now."                   --> "The time is now" -- same as above
+expandTests = [ expand "The capital of $1 is $2" "$1 Peru\n$2 Lima." --> "The capital of Peru is Lima."  -- So far as I'm concerned, there should not be a '.' at the end as it does the same thing as '\' or 'n'
+              , expand "The time is $a"  "$a now."                   --> "The time is now." -- same as above                  update:Adjusted my code so the test data can be the original ones
               , expand "Keywords (e.g. $x, $y, $z...) may appear anwhere, e.g. <$here>."
                        "$x $a\n$y $b\n$z $c\n$here $this-is-one"
                    --> "Keywords (e.g. $a, $b, $c...) may appear anwhere, e.g. <$this-is-one>."

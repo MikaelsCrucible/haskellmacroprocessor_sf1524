@@ -11,6 +11,8 @@ type KeywordDefs  = [(Keyword, KeywordValue)]
 
 separators :: String
 separators = " \n\t.,:;!\"\'()<>/\\"
+notpuncnospacesep :: String
+notpuncnospacesep = "\n\t()<>/\\" --punctuation marks and space are both separator chars but I can't see why in the sentences in test data there are space are punctuation marks acting as a part of the sentence
 
 -----------------------------------------------------
 
@@ -72,6 +74,7 @@ as a result.
 
 > expand "The capital $1 is $2" "$1 Peru\n$2 Lima." == "The capital of Peru is Lima"
                                                                                   /\ no '.' here, guess I'm right about the test data
+                                                                                  /\ OK the test data wins I will adjust my code to fit the test data
 -}
 expand :: FileContents -- ^ the template file contents
        -> FileContents -- ^ the info file contents
@@ -88,7 +91,7 @@ expandonce :: FileContents -- ^ the template file contents
        -> FileContents
 expandonce template defs = concat (combine (fst words) (map (`replaceWord` keys) (snd words))) -- replace all words in the text by keys and then combine them all together to get a string
   where words = splitText separators template
-        keys = getKeywordDefs (snd (splitText (tail separators) defs))
+        keys = getKeywordDefs (snd (splitText notpuncnospacesep defs)) --punctuation marks and space should not be in the separators I think
 
 -- You may wish to uncomment and implement this helper function
 -- when implementing expand

@@ -1,4 +1,4 @@
-module MP (separators, lookUp, splitText, combine, getKeywordDefs, expand, expandonce, replaceWord) where
+module MP (separators, notpuncnospacesep, lookUp, splitText, combine, getKeywordDefs, expand, expandonce, replaceWord) where
 
 import Data.Maybe
 import Data.List
@@ -83,7 +83,7 @@ expand template defs
   |  '#' `notElem` defs = expandonce template defs
   |  otherwise = let keys = snd (splitText "#" defs)
                      texts = map (expandonce template) keys
-                     in intercalate "-----" texts
+                     in (intercalate "\n-----\n" texts) ++ "\n-----\n"
 
 --expandonce was the original expand but had to write a new one for the extension content
 expandonce :: FileContents -- ^ the template file contents
